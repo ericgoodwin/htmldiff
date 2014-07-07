@@ -1,4 +1,21 @@
+require 'active_support/core_ext/module/attribute_accessors'
+
 module HTMLDiff
+
+  mattr_accessor :insert_tag
+  @@insert_tag ||= 'ins'
+
+  mattr_accessor :insert_class
+  @@insert_class ||= 'diffins'
+
+  mattr_accessor :delete_tag
+  @@delete_tag ||= 'del'
+
+  mattr_accessor :delete_class
+  @@delete_class ||= 'diffdel'
+
+  mattr_accessor :replace_class
+  @@replace_class ||= 'diffmod'
 
   Match = Struct.new(:start_in_old, :start_in_new, :size)
   class Match
@@ -169,16 +186,16 @@ module HTMLDiff
     end
 
     def replace(operation)
-      delete(operation, 'diffmod')
-      insert(operation, 'diffmod')
+      delete(operation, HTMLDiff.replace_class)
+      insert(operation, HTMLDiff.replace_class)
     end
-    
-    def insert(operation, tagclass = 'diffins')
-      insert_tag('ins', tagclass, @new_words[operation.start_in_new...operation.end_in_new])
+
+    def insert(operation, tagclass = HTMLDiff.insert_class)
+      insert_tag(HTMLDiff.insert_tag, tagclass, @new_words[operation.start_in_new...operation.end_in_new])
     end
-    
-    def delete(operation, tagclass = 'diffdel')
-       insert_tag('del', tagclass, @old_words[operation.start_in_old...operation.end_in_old])
+
+    def delete(operation, tagclass = HTMLDiff.delete_class)
+       insert_tag(HTMLDiff.delete_tag, tagclass, @old_words[operation.start_in_old...operation.end_in_old])
     end
     
     def equal(operation)
